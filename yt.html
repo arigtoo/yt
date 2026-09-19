@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>yt-dlp Befehl Generator</title>
+<style>
+  body{font-family:system-ui; max-width:600px; margin:40px auto; padding:20px; background:#111; color:#eee}
+  input,select{width:100%; padding:12px; margin:8px 0 16px 0; background:#222; color:#fff; border:1px solid #333; border-radius:8px; font-size:16px}
+  button{width:100%; padding:14px; background:#fff; color:#000; border:0; border-radius:8px; font-weight:700; font-size:16px; cursor:pointer}
+  button:active{transform:scale(0.98)}
+  pre{background:#222; padding:16px; border-radius:8px; overflow-x:auto; white-space:pre-wrap; word-break:break-all; border:1px solid #333; margin-top:20px}
+  small{color:#888}
+</style>
+</head>
+<body>
+  <h2>yt-dlp Generator</h2>
+  <small></small>
+
+  <label>Video URL</label>
+  <input id="url" placeholder="https://www.youtube.com/watch?v=...">
+
+  <label>Format</label>
+  <select id="format">
+    <option value='-f "bestvideo[height<=1080]+bestaudio/best"'>Best 1080p (Video)</option>
+    <option value='-f "bestvideo[height<=720]+bestaudio/best"'>Best 720p</option>
+    <option value='-x --audio-format mp3'>Nur Audio mp3</option>
+    <option value='-x --audio-format opus'>Nur Audio opus (besser)</option>
+    <option value='-f best'>Best (auto)</option>
+  </select>
+
+  <label>Speicherort</label>
+  <input id="path" value="~/Downloads">
+
+  <button onclick="gen()">Befehl generieren</button>
+
+  <pre id="out">Befehl erscheint hier...</pre>
+  
+  <button id="copyBtn" onclick="copyCmd()" style="background:#333; color:#fff; margin-top:10px; display:none">In Zwischenablage kopieren</button>
+  <a id="termLink" href="#" style="display:none; text-align:center; display:none; margin-top:12px; color:#888; display:none">Im Terminal öffnen (mit Handler)</a>
+
+<script>
+function gen(){
+  const url = document.getElementById('url').value.trim();
+  const fmt = document.getElementById('format').value;
+  const path = document.getElementById('path').value.trim();
+  if(!url) return alert("URL fehlt");
+  
+  const cmd = `yt-dlp ${fmt} -P "${path}" "${url}"`;
+  document.getElementById('out').textContent = cmd;
+  document.getElementById('copyBtn').style.display = 'block';
+  
+  // Für den Terminal-Handler Link
+  const link = document.getElementById('termLink');
+  link.href = 'yt-dlp://' + encodeURIComponent(cmd);
+  link.style.display = 'block';
+}
+
+function copyCmd(){
+  const cmd = document.getElementById('out').textContent;
+  navigator.clipboard.writeText(cmd);
+  const btn = document.getElementById('copyBtn');
+  btn.textContent = "Kopiert! Jetzt im Terminal Strg+Shift+V + Enter";
+  setTimeout(()=>btn.textContent="In Zwischenablage kopieren", 2000);
+}
+</script>
+</body>
+</html>
